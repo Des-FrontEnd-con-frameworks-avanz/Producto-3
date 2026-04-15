@@ -1,104 +1,97 @@
-# Producto 3 - Interfaz Móvil (React Native)
+This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
-**Asignatura:** FP.451 - Desarrollo front-end con frameworks avanzados en entornos móviles  
-**Grupo:** NoobDevs  
+# Getting Started
 
----
+> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
 
-## Estructura del proyecto
+## Step 1: Start Metro
 
-```
-├── App.js                          # Punto de entrada: Firebase + Navegación (Pol)
-├── src/
-│   ├── config/
-│   │   └── firebase.js             # Configuración Firebase
-│   └── screens/
-│       ├── ListadoScreen.js        # Pantalla listado con FlatList (Kevin)
-│       ├── DetalleScreen.js        # Pantalla detalle con zoom (Thabata)
-│       └── MultimediaScreen.js     # Pantalla reproductor multimedia (Mar)
-└── package.json
-```
+First, you will need to run **Metro**, the JavaScript build tool for React Native.
 
----
+To start the Metro dev server, run the following command from the root of your React Native project:
 
-## Comandos de instalación
+```sh
+# Using npm
+npm start
 
-### 1. Inicializar proyecto React Native (solo la primera vez)
-```bash
-npx @react-native-community/cli init Producto3 --pm npm
-cd Producto3
+# OR using Yarn
+yarn start
 ```
 
-### 2. Instalar React Native Firebase
-```bash
-# Módulo principal (obligatorio)
-npm install @react-native-firebase/app
+## Step 2: Build and run your app
 
-# Módulo Firestore (para la base de datos)
-npm install @react-native-firebase/firestore
+With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
 
-# Android: añadir en android/build.gradle (dentro de buildscript > dependencies):
-#   classpath 'com.google.gms:google-services:4.4.2'
-# Android: añadir al final de android/app/build.gradle:
-#   apply plugin: 'com.google.gms.google-services'
-# Descargar google-services.json desde la consola Firebase y colocarlo en android/app/
-```
+### Android
 
-### 3. Instalar React Navigation y dependencias
-```bash
-npm install @react-navigation/native @react-navigation/native-stack
-npm install react-native-screens react-native-safe-area-context
-
-# iOS (solo en Mac):
-cd ios && pod install && cd ..
-```
-
-### 4. Ejecutar la app
-```bash
-# Android
+```sh
+# Using npm
 npm run android
 
-# iOS (solo en Mac)
+# OR using Yarn
+yarn android
+```
+
+### iOS
+
+For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+
+The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+
+```sh
+bundle install
+```
+
+Then, and every time you update your native dependencies, run:
+
+```sh
+bundle exec pod install
+```
+
+For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+
+```sh
+# Using npm
 npm run ios
+
+# OR using Yarn
+yarn ios
 ```
 
----
+If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
 
-## Configuración de Firebase
+This is one way to run your app — you can also build it directly from Android Studio or Xcode.
 
-1. Crear proyecto en [Firebase Console](https://console.firebase.google.com/)
-2. Añadir una app Android (package name: `com.producto3`)
-3. Descargar `google-services.json` y colocarlo en `android/app/`
-4. Para iOS: descargar `GoogleService-Info.plist` y añadirlo al proyecto Xcode
+## Step 3: Modify your app
 
----
+Now that you have successfully run the app, let's make changes!
 
-## División de tareas
+Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
 
-| Integrante | Tarea |
-|-----------|-------|
-| **Pol** | Estructura base, Firebase, Navegación (este archivo) |
-| **Kevin** | `ListadoScreen.js` - FlatList con datos de Firebase + Entrega |
-| **Thabata** | `DetalleScreen.js` - Vista detalle con imagen zoomeable |
-| **Mar** | `MultimediaScreen.js` - Reproductor multimedia con 4+ botones |
-| **Pol** | Trello Producto 3 + Documentación navegación |
+When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
 
----
+- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
+- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
 
-## Navegación entre pantallas
+## Congratulations! :tada:
 
-Para navegar desde cualquier pantalla, usar:
+You've successfully run and modified your React Native App. :partying_face:
 
-```js
-// Ir al detalle pasando el item seleccionado
-navigation.navigate('Detalle', { item: itemSeleccionado });
+### Now what?
 
-// Ir a multimedia
-navigation.navigate('Multimedia', { item: itemSeleccionado });
+- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
+- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
 
-// Volver atrás
-navigation.goBack();
+# Troubleshooting
 
-// Ir al inicio (listado)
-navigation.navigate('Listado');
-```
+If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+
+# Learn More
+
+To learn more about React Native, take a look at the following resources:
+
+- [React Native Website](https://reactnative.dev) - learn more about React Native.
+- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
+- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
+- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
+- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
