@@ -120,11 +120,8 @@ Para mantener el repositorio limpio y seguro, se han excluido los siguientes ele
 
 Una vez configurado todo, el componente **ListadoScreen** debería mostrar el estado de conexión:
 
-![Estado de Conexión](./assets/success.png)
 *Semáforo de conexión en verde indicando comunicación exitosa con Europe-West1.*
 
 ---
-**Asignatura:** Programación Móvil - Producto 3 (2026)
+**Producto 3 (2026)** 
 ```
-
----
