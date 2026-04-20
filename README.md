@@ -50,8 +50,6 @@ Para verificar que el entorno es correcto, ejecute el diagnóstico oficial:
 npx react-native doctor
 ```
 
-
-
 ---
 
 ## 🔥 3. Configuración de Firebase (Android)
@@ -90,7 +88,9 @@ Siga este orden para asegurar una compilación limpia sin errores de caché:
 
 ```bash
 # 1. Limpiar archivos temporales de Android
-cd android && gradlew clean && cd ..
+cd android
+gradlew clean
+cd ..
 
 # 2. Iniciar servidor Metro con limpieza de caché
 npx react-native start --reset-cache
@@ -123,10 +123,3 @@ Una vez configurado todo, el componente **ListadoScreen** debería mostrar el es
 ```
 
 ---
-
-### 💡 Recordatorio final para que todo salga bien:
-1.  **Crea la carpeta `assets`** en la raíz de tu proyecto y guarda ahí tu captura de pantalla con el nombre `success.png`.
-2.  **Pasa los archivos `.env` y `google-services.json`** a Pol y Thabata por privado, ya que no estarán en el repositorio de Git.
-3.  **Para el profesor:** Este README le explicará exactamente por qué has tomado decisiones de seguridad (como el `.env`) y cómo configuró Android Studio.
-
-¡Ya lo tienes todo, Kevin! A por el 10. 🚀
