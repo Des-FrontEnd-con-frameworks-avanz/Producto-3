@@ -13,16 +13,32 @@ Antes de configurar el proyecto, es obligatorio tener instalados y configurados 
 * **Android Studio:**
     * Instalar el SDK de Android (versión 34 o superior).
     * Configurar un **AVD (Android Virtual Device)** como emulador. (Probado en pixel 10)
+
 * **Variables de Entorno del SO:**
-    * `ANDROID_HOME`: Apuntando a la ruta del SDK de android. (Ej-> C:\Users\${NOMBREUSUARIO}\AppData\Local\Android\Sdk)
-    * `JAVA_HOME`: Apuntando a la ruta del SDK de java 17. (Ej-> C:\Users\${NOMBREUSUARIO}\.jdks\temurin-17.0.18)
-    * Añadir al PATH del sistema `%ANDROID_HOME%\platform-tools`, `%ANDROID_HOME%\emulator`, `%ANDROID_HOME%\tools\bin`  para usar comandos `adb`.
+
+    * `ANDROID_HOME`: Apuntando a la ruta del SDK de android. 
+    (Ej-> C:\Users\${NOMBREUSUARIO}\AppData\Local\Android\Sdk)
+
+    * `JAVA_HOME`: Apuntando a la ruta del SDK de java 17. 
+    (Ej-> C:\Users\${NOMBREUSUARIO}\ .jdks\temurin-17.0.18)
+    
+    * Añadir al PATH del sistema 
+    `%ANDROID_HOME%\platform-tools`, 
+    `%ANDROID_HOME%\emulator`, 
+    `%ANDROID_HOME%\tools\bin`  
+    para usar comandos `adb`.
+
 
 ---
 
 ## 🔧 2. Configuración del Entorno de Trabajo
 
-Para que **VS Code** se comunique correctamente con el emulador de Android Studio, ejecute el siguiente comando una vez el emulador esté abierto:
+Para que **VS Code** se comunique correctamente con el emulador de Android Studio:
+
+* **Crear en la carpeta ./android un archivo llamado local.properties con la siguiente línea:**
+`sdk.dir=C:/Users/${NOMBREUSUARIO}/AppData/Local/Android/Sdk`
+
+* **Ejecute el siguiente comando una vez el emulador esté abierto:**
 
 ```bash
 # Mapeo de puertos para el servidor Metro
@@ -34,6 +50,8 @@ Para verificar que el entorno es correcto, ejecute el diagnóstico oficial:
 npx react-native doctor
 ```
 
+
+
 ---
 
 ## 🔥 3. Configuración de Firebase (Android)
@@ -41,12 +59,14 @@ npx react-native doctor
 La aplicación utiliza Firebase para el almacenamiento en tiempo real. Se han realizado las siguientes modificaciones técnicas:
 
 1.  **Credenciales:** Colocar el archivo `google-services.json` en la ruta: `android/app/`.
+
 2.  **Gradle Nivel Proyecto (`android/build.gradle`):**
     ```gradle
     dependencies {
         classpath("com.google.gms:google-services:4.4.2")
     }
     ```
+
 3.  **Gradle Nivel Aplicación (`android/app/build.gradle`):**
     ```gradle
     apply plugin: "com.google.gms.google-services"
@@ -58,10 +78,8 @@ La aplicación utiliza Firebase para el almacenamiento en tiempo real. Se han re
 
 Para proteger la URL de la base de datos y evitar el error de instancia nula (Null Instance), se ha implementado la librería `react-native-dotenv`:
 
-1.  **Archivo .env:** Crear un archivo llamado `.env` en la raíz del proyecto con la URL de la región de Europa:
-    ```env
-    FIREBASE_DB_URL=[https://equipobasket-database-default-rtdb.europe-west1.firebasedatabase.app/](https://equipobasket-database-default-rtdb.europe-west1.firebasedatabase.app/)
-    ```
+1.  **Archivo .env:** Crear un archivo llamado `.env`
+
 2.  **Babel:** Se ha configurado `babel.config.js` para permitir la importación de estas variables mediante `@env`.
 
 ---
