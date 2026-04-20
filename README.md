@@ -9,7 +9,13 @@ Este archivo contiene la guía completa de configuración del entorno de desarro
 Antes de configurar el proyecto, es obligatorio tener instalados y configurados los siguientes componentes en el sistema:
 
 * **Node.js (LTS):** Versión 18 o superior.
-* **JDK 17 (Java Development Kit):** Necesario para compilar el código nativo de Android.
+```bash
+npm install
+```
+* **JDK 17 (Java Development Kit):** Necesario para compilar el código nativo de Android. 
+
+(desde IntelliJ se puede hacer)
+
 * **Android Studio:**
     * Instalar el SDK de Android (versión 34 o superior).
     * Configurar un **AVD (Android Virtual Device)** como emulador. (Probado en pixel 10)
@@ -27,7 +33,6 @@ Antes de configurar el proyecto, es obligatorio tener instalados y configurados 
     `%ANDROID_HOME%\emulator`, 
     `%ANDROID_HOME%\tools\bin`  
     para usar comandos `adb`.
-
 
 ---
 
@@ -61,7 +66,7 @@ La aplicación utiliza Firebase para el almacenamiento en tiempo real. Se han re
 2.  **Gradle Nivel Proyecto (`android/build.gradle`):**
     ```gradle
     dependencies {
-        classpath("com.google.gms:google-services:4.4.2")
+        classpath("com.google.gms:google-services:4.4.1")
     }
     ```
 
