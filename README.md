@@ -1,97 +1,114 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 🏀 Proyecto React Native - Producto 3
 
-# Getting Started
+Este archivo contiene la guía completa de configuración del entorno de desarrollo y la vinculación con **Firebase Realtime Database**. Siga estos pasos para asegurar que la aplicación compile y se conecte correctamente a los servicios en la nube.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+---
 
-## Step 1: Start Metro
+## 🛠️ 1. Requisitos Previos (Software)
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+Antes de configurar el proyecto, es obligatorio tener instalados y configurados los siguientes componentes en el sistema:
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+* **Node.js (LTS):** Versión 18 o superior.
+* **JDK 17 (Java Development Kit):** Necesario para compilar el código nativo de Android.
+* **Android Studio:**
+    * Instalar el SDK de Android (versión 34 o superior).
+    * Configurar un **AVD (Android Virtual Device)** como emulador. (Probado en pixel 10)
+* **Variables de Entorno del SO:**
+    * `ANDROID_HOME`: Apuntando a la ruta del SDK de android. (Ej-> C:\Users\${NOMBREUSUARIO}\AppData\Local\Android\Sdk)
+    * `JAVA_HOME`: Apuntando a la ruta del SDK de java 17. (Ej-> C:\Users\${NOMBREUSUARIO}\.jdks\temurin-17.0.18)
+    * Añadir al PATH del sistema `%ANDROID_HOME%\platform-tools`, `%ANDROID_HOME%\emulator`, `%ANDROID_HOME%\tools\bin`  para usar comandos `adb`.
 
-```sh
-# Using npm
-npm start
+---
 
-# OR using Yarn
-yarn start
+## 🔧 2. Configuración del Entorno de Trabajo
+
+Para que **VS Code** se comunique correctamente con el emulador de Android Studio, ejecute el siguiente comando una vez el emulador esté abierto:
+
+```bash
+# Mapeo de puertos para el servidor Metro
+adb reverse tcp:8081 tcp:8081
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+Para verificar que el entorno es correcto, ejecute el diagnóstico oficial:
+```bash
+npx react-native doctor
 ```
 
-### iOS
+---
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+## 🔥 3. Configuración de Firebase (Android)
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+La aplicación utiliza Firebase para el almacenamiento en tiempo real. Se han realizado las siguientes modificaciones técnicas:
 
-```sh
-bundle install
+1.  **Credenciales:** Colocar el archivo `google-services.json` en la ruta: `android/app/`.
+2.  **Gradle Nivel Proyecto (`android/build.gradle`):**
+    ```gradle
+    dependencies {
+        classpath("com.google.gms:google-services:4.4.2")
+    }
+    ```
+3.  **Gradle Nivel Aplicación (`android/app/build.gradle`):**
+    ```gradle
+    apply plugin: "com.google.gms.google-services"
+    ```
+
+---
+
+## 🔐 4. Seguridad y Variables de Entorno
+
+Para proteger la URL de la base de datos y evitar el error de instancia nula (Null Instance), se ha implementado la librería `react-native-dotenv`:
+
+1.  **Archivo .env:** Crear un archivo llamado `.env` en la raíz del proyecto con la URL de la región de Europa:
+    ```env
+    FIREBASE_DB_URL=[https://equipobasket-database-default-rtdb.europe-west1.firebasedatabase.app/](https://equipobasket-database-default-rtdb.europe-west1.firebasedatabase.app/)
+    ```
+2.  **Babel:** Se ha configurado `babel.config.js` para permitir la importación de estas variables mediante `@env`.
+
+---
+
+## 🚀 5. Comandos de Ejecución
+
+Siga este orden para asegurar una compilación limpia sin errores de caché:
+
+```bash
+# 1. Limpiar archivos temporales de Android
+cd android && gradlew clean && cd ..
+
+# 2. Iniciar servidor Metro con limpieza de caché
+npx react-native start --reset-cache
+
+# 3. Lanzar la aplicación en el emulador
+npx react-native run-android
 ```
 
-Then, and every time you update your native dependencies, run:
+---
 
-```sh
-bundle exec pod install
+## 📝 6. Gestión de Git (.gitignore)
+
+Para mantener el repositorio limpio y seguro, se han excluido los siguientes elementos:
+
+* **Secretos:** `.env` y `google-services.json`.
+* **Temporales de Gradle:** Carpetas `.gradle/` y todas las carpetas `build/`.
+* **Configuración Local:** `local.properties` (específico de cada PC).
+
+---
+
+## 📸 7. Evidencia de Conexión
+
+Una vez configurado todo, el componente **ListadoScreen** debería mostrar el estado de conexión:
+
+![Estado de Conexión](./assets/success.png)
+*Semáforo de conexión en verde indicando comunicación exitosa con Europe-West1.*
+
+---
+**Asignatura:** Programación Móvil - Producto 3 (2026)
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+---
 
-```sh
-# Using npm
-npm run ios
+### 💡 Recordatorio final para que todo salga bien:
+1.  **Crea la carpeta `assets`** en la raíz de tu proyecto y guarda ahí tu captura de pantalla con el nombre `success.png`.
+2.  **Pasa los archivos `.env` y `google-services.json`** a Pol y Thabata por privado, ya que no estarán en el repositorio de Git.
+3.  **Para el profesor:** Este README le explicará exactamente por qué has tomado decisiones de seguridad (como el `.env`) y cómo configuró Android Studio.
 
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+¡Ya lo tienes todo, Kevin! A por el 10. 🚀
