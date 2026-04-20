@@ -102,13 +102,13 @@ cd ..
 # 2. Iniciar servidor Metro con limpieza de caché
 npx react-native start --reset-cache
 
-# 3. Abrir una terminal y Lanzar Metro
+# 3. Abrir una terminal y Lanzar Metro por si acaso
 npm start
 
-# 4. Abrir una segunda terminal y Lanzar la aplicación en el emulador
+# 4. Abrir una segunda terminal y Lanzar la aplicación en el emulador, con este mismo comando os da la posibilidad de abrir una terminal fuera de vs code para lanzar Metro, recordad que ya hay 1 abierta y funcional por eso detecta que el puerto se esta usando.
 npx react-native run-android
 
-#si tienes el puerto ocupado en el 8081 dale a No y ejecutara en otro puerto
+
 ```
 
 ---
