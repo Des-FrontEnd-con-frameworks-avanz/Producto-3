@@ -100,7 +100,10 @@ cd ..
 # 2. Iniciar servidor Metro con limpieza de caché
 npx react-native start --reset-cache
 
-# 3. Lanzar la aplicación en el emulador
+# 3. Abrir una terminal y Lanzar Metro
+npm start
+
+# 4. Abrir una segunda terminal y Lanzar la aplicación en el emulador
 npx react-native run-android
 ```
 
