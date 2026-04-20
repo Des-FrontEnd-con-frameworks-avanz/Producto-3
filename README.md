@@ -2,6 +2,8 @@
 
 Este archivo contiene la guía completa de configuración del entorno de desarrollo y la vinculación con **Firebase Realtime Database**. Siga estos pasos para asegurar que la aplicación compile y se conecte correctamente a los servicios en la nube.
 
+**Archivos necesarios en Discord**
+
 ---
 
 ## 🛠️ 1. Requisitos Previos (Software)
@@ -105,6 +107,8 @@ npm start
 
 # 4. Abrir una segunda terminal y Lanzar la aplicación en el emulador
 npx react-native run-android
+
+#si tienes el puerto ocupado en el 8081 dale a No y ejecutara en otro puerto
 ```
 
 ---
