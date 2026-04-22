@@ -1,81 +1,112 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import database from '@react-native-firebase/database';
-import { FIREBASE_DB_URL } from '@env'; 
+import React, { Component } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
+import firestore from '@react-native-firebase/firestore'; 
+import { Player } from '../types/Player'; 
 
-const ListadoScreen = () => {
-  const [estado, setEstado] = useState<'cargando' | 'conectado' | 'error'>('cargando');
-  const [mensaje, setMensaje] = useState('Iniciando conexión...');
+interface State {
+  jugadores: Player[];     
+  cargando: boolean; 
+}
 
-  useEffect(() => {
-    try {
-      const db = database().app.database(FIREBASE_DB_URL);
-      const conectadoRef = db.ref('.info/connected');
+interface Props {
+  navigation: any; 
+}
 
-      const listener = conectadoRef.on('value', snapshot => {
-        if (snapshot.val() === true) {
-          setEstado('conectado');
-          setMensaje('¡CONEXIÓN EXITOSA! ✅\nBase de Datos Vinculada');
-        } else {
-          setEstado('error');
-          setMensaje('Buscando señal de Firebase... ❌');
-        }
-      }, (error) => {
-        setEstado('error');
-        setMensaje('Error de Permisos: ' + error.message);
-      });
+export default class ListadoScreen extends Component<Props, State> {
+  
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      jugadores: [],        
+      cargando: true,   
+    };
+  }
 
-      return () => conectadoRef.off('value', listener);
-    } catch (err) {
-      setEstado('error');
-      setMensaje('Error de configuración .env: Revisa Babel');
-      console.error(err);
-    }
-  }, []);
-
-  return (
-    <View style={[styles.container, estado === 'conectado' ? styles.bgSuccess : styles.bgDefault]}>
-      <View style={styles.card}>
-        <Text style={styles.label}>FIREBASE MONITOR (.ENV)</Text>
+  componentDidMount() {
+    firestore()
+      .collection('players')
+      .get()
+      .then((querySnapshot: any) => {
+        const arrayJugadores: Player[] = [];
         
-        {estado === 'cargando' && <ActivityIndicator size="large" color="#1A237E" />}
+        querySnapshot.forEach((documento: any) => {
+          const datos = documento.data();
+          
+          arrayJugadores.push({
+            id: documento.id,
+            nombre: datos.nombre,
+            apellidos: datos.apellidos,
+            posicion: datos.posicion,
+            edad: datos.edad,
+            altura: datos.altura,
+            peso: datos.peso,
+            experiencia: datos.experiencia,
+            precio: datos.precio,
+            fotoUrl: datos.fotoUrl,
+            videoUrl: datos.videoUrl,
+            posterUrl: datos.posterUrl,
+            descripcion: datos.descripcion,
+          });
+        });
 
-        <Text style={[
-          styles.statusText, 
-          estado === 'conectado' ? styles.textSuccess : styles.textError
-        ]}>
-          {mensaje}
-        </Text>
+        this.setState({
+          jugadores: arrayJugadores,
+          cargando: false,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        this.setState({ cargando: false });
+      });
+  }
 
-        <Text style={styles.hint}>
-          {estado === 'conectado' 
-            ? "URL cargada desde el archivo secreto." 
-            : "Asegúrate de haber reiniciado con --reset-cache."}
-        </Text>
+  renderTarjeta = ({ item }: { item: Player }) => {
+    return (
+      <TouchableOpacity 
+        style={styles.tarjeta}
+        onPress={() => this.props.navigation.navigate('DetalleScreen', { player: item })}
+      >
+        <Image source={{ uri: item.fotoUrl }} style={styles.foto} />
+        <View style={styles.infoContainer}>
+          <Text style={styles.nombre}>{item.nombre} {item.apellidos}</Text>
+          <Text style={styles.posicion}>{item.posicion}</Text>
+          <Text style={styles.precio}>${item.precio.toLocaleString()}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  render() {
+    if (this.state.cargando) {
+      return (
+        <View style={styles.centro}>
+          <ActivityIndicator size="large" color="#1A237E" />
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.contenedor}>
+        <Text style={styles.cabecera}>Jugadores</Text>
+        
+        <FlatList
+          data={this.state.jugadores}
+          renderItem={this.renderTarjeta}
+          keyExtractor={(item) => item.id as string}
+        />
       </View>
-    </View>
-  );
-};
+    );
+  }
+}
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20 },
-  bgDefault: { backgroundColor: '#F5F5F5' },
-  bgSuccess: { backgroundColor: '#E8F5E9' },
-  card: {
-    backgroundColor: 'white',
-    padding: 30,
-    borderRadius: 20,
-    alignItems: 'center',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-  },
-  label: { fontSize: 10, fontWeight: 'bold', color: '#AAA', letterSpacing: 2 },
-  statusText: { fontSize: 18, fontWeight: 'bold', marginVertical: 15, textAlign: 'center', lineHeight: 25 },
-  textSuccess: { color: '#2E7D32' },
-  textError: { color: '#C62828' },
-  hint: { fontSize: 12, color: '#888', textAlign: 'center', marginTop: 10 }
+  contenedor: { flex: 1, backgroundColor: '#F0F2F5', padding: 12 },
+  centro: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  cabecera: { fontSize: 22, fontWeight: '800', marginBottom: 20, textAlign: 'center', color: '#1A237E', letterSpacing: 2, textTransform: 'uppercase' },
+  tarjeta: { backgroundColor: '#ffffff', padding: 12, borderRadius: 15, marginBottom: 14, flexDirection: 'row', alignItems: 'center', elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 },
+  foto: { width: 75, height: 75, borderRadius: 37.5, marginRight: 15, borderWidth: 3, borderColor: '#1A237E', backgroundColor: '#f0f0f0' },
+  infoContainer: { flex: 1, justifyContent: 'center' },
+  nombre: { fontSize: 18, fontWeight: 'bold', color: '#1A237E' },
+  posicion: { fontSize: 14, color: '#757575', marginTop: 2, fontWeight: '500' },
+  precio: { fontSize: 17, fontWeight: '800', color: '#2E7D32', marginTop: 6 },
 });
-
-export default ListadoScreen;
