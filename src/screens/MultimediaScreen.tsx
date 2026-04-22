@@ -5,11 +5,10 @@
  * Recibe route.params.player con el objeto Player seleccionado (incluye videoUrl y posterUrl).
  */
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
-import { useState, useRef } from 'react';
 import Video from 'react-native-video';
 
 
@@ -20,7 +19,7 @@ const MultimediaScreen: React.FC<Props> = ({ route }) => {
 
   const videoRef = useRef<React.ComponentRef<typeof Video> | null>(null);
 
-  const [paused, setPaused] = useState(true);
+  const [paused, setPaused] = useState(false);
   const [muted, setMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -38,49 +37,76 @@ const MultimediaScreen: React.FC<Props> = ({ route }) => {
   }
 
   const adelantar10Segundos = () => {
-    videoRef.current?.seek(currentTime+10);
+    videoRef.current?.seek(Math.min(currentTime + 10, duration));
+  }
+
+  const retroceder10Segundos = () => {
+    videoRef.current?.seek(Math.max(currentTime - 10, 0));
   }
 
   const progress = duration>0 ? currentTime/ duration: 0;
-
+  
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Pantalla Multimedia</Text>
+      <Text style={styles.title}>Mejores Jugadas</Text>
+        {player.videoUrl && player.videoUrl !== undefined ? (
         <Video 
           ref={videoRef}
-          source={{uri : player.videoUrl}}
+          source={{ uri: 'https://www.w3schools.com/html/mov_bbb.mp4' }}//{{uri : player.videoUrl}}
           style={styles.videoPlayer}
           paused={paused}
           muted={muted}
           onProgress={onProgress}
           onLoad={onLoad}
           resizeMode="contain"
-        />
+          poster={player.posterUrl}
+          posterResizeMode="cover"
+          controls={true}
+          onError={(e) => console.log('ERROR VIDEO:', e)}
+        /> ) : (
+          <Text style={{ color: 'white' }}>No hay vídeo disponible</Text>   
+        )}
 
+        {/* PROGRESO */}
+      <View style={styles.barraWrapper}>
         <View style={styles.barraContainer}>
-          <View style={[styles.barraProgreso, {width: `${progress * 100}%`}]}/>
+          <View style={[styles.barraProgreso, { width: `${progress * 100}%` }]} />
         </View>
+        <Text style={styles.tiempo}>
+          {Math.floor(currentTime)}s / {Math.floor(duration)}s
+        </Text>
+      </View>
 
-        <View style={styles.controlesContainer}>
+       {/* CONTROLES */}
+      <View style={styles.controlesContainer}>
+        <TouchableOpacity style={styles.boton} onPress={reiniciarVideo}>
+          <Text style={styles.textoBoton}>⏮️</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity style={styles.boton} onPress={reiniciarVideo}>
-            <Text style={styles.textoBoton}>⏮️ Inicio</Text>
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.boton} onPress={retroceder10Segundos}>
+          <Text style={styles.textoBoton}>⏪</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setPaused(!paused)}>
-            <Text>{paused ? '▶️ Play' : '⏸️ Pausa'}</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.boton, styles.botonPrincipal]}
+          onPress={() => setPaused(!paused)}
+        >
+          <Text style={styles.textoBotonGrande}>
+            {paused ? '▶️' : '⏸️'}
+          </Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity style={styles.boton} onPress={adelantar10Segundos}>
-            <Text style={styles.textoBoton}>⏩ +10s</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity onPress={() => setMuted(!muted)}>
-            <Text>{muted ? '🔇 Muted' : '🔊 Sonido'}</Text>
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.boton} onPress={adelantar10Segundos}>
+          <Text style={styles.textoBoton}>⏩</Text>
+        </TouchableOpacity>
 
-        </View>
+        <TouchableOpacity style={styles.boton} onPress={() => setMuted(!muted)}>
+          <Text style={styles.textoBoton}>
+            {muted ? '🔇' : '🔊'}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View> 
   );
 };
@@ -88,48 +114,69 @@ const MultimediaScreen: React.FC<Props> = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#0F172A',
+    paddingTop: 20,
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#1A237E',
+    color: '#FFFFFF',
+    textAlign: 'center',
     marginBottom: 10,
   },
   videoPlayer: {
     width: '100%',
     aspectRatio: 16 / 9,
-    backgroundColor: '#000000', 
+    backgroundColor: '#000',
+  },
+
+  barraWrapper: {
+    paddingHorizontal: 15,
+    marginTop: 10,
   },
   barraContainer: {
     width: '100%',
-    height: 10,
-    backgroundColor: 'rgba(104, 104, 104, 0.33)'
+    height: 6,
+    backgroundColor: '#334155',
+    borderRadius: 5,
+    overflow: 'hidden',
   },
-  barraProgreso:{
+  barraProgreso: {
     height: '100%',
-    backgroundColor: 'rgba(37, 92, 241, 0.33)'
+    backgroundColor: '#3B82F6',
   },
+  tiempo: {
+    color: '#CBD5F5',
+    fontSize: 12,
+    marginTop: 5,
+    textAlign: 'right',
+  },
+
   controlesContainer: {
-    flexDirection: 'row', 
-    justifyContent: 'space-evenly',
-    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginTop: 20,
     paddingHorizontal: 10,
   },
   boton: {
-    backgroundColor: '#333333',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 8,
+    backgroundColor: '#1E293B',
+    padding: 12,
+    borderRadius: 50,
+    elevation: 3,
+  },
+  botonPrincipal: {
+    backgroundColor: '#3B82F6',
+    padding: 16,
   },
   textoBoton: {
     color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: 'bold',
-  }
- 
+    fontSize: 16,
+  },
+  textoBotonGrande: {
+    color: '#FFFFFF',
+    fontSize: 20,
+  },
 });
 
 export default MultimediaScreen;
