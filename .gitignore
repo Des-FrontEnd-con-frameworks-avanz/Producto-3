@@ -83,3 +83,6 @@ yarn-error.log
 
 # Firebase Android
 android/app/google-services.json
+
+# Android local configuration
+android/local.properties
