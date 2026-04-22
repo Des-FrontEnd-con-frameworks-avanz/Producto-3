@@ -64,7 +64,7 @@ export default class ListadoScreen extends Component<Props, State> {
     return (
       <TouchableOpacity 
         style={styles.tarjeta}
-        onPress={() => this.props.navigation.navigate('DetalleScreen', { player: item })}
+        onPress={() => this.props.navigation.navigate('Detalle', { player: item })}
       >
         <Image source={{ uri: item.fotoUrl }} style={styles.foto} />
         <View style={styles.infoContainer}>

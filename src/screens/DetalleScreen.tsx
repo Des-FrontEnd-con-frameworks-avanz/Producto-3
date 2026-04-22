@@ -19,18 +19,20 @@ const DetalleScreen: React.FC<Props> = ({ route, navigation }) => {
   return (
     <>
       <ScrollView style={styles.mainContainer}>
+
         {/* IMAGEN CLICKEABLE */}
-        <TouchableOpacity onPress={() => setVerZoom(true)}>
+        <View style={styles.contenedorAvatar}>
+        <TouchableOpacity onPress={() => setVerZoom(true)} activeOpacity={0.8}>
           <Image 
-          source={{ uri: player.fotoUrl }} 
-          style={styles.imagenDetalle} />
-          <Text style={styles.textoAyuda}>Toca la imagen para ampliar</Text>
+            source={{ uri: player.fotoUrl }} 
+            style={styles.imagenRedonda} 
+          />
         </TouchableOpacity>
+        <Text style={styles.textoAyuda}>Toca para ampliar</Text>
+      </View>
 
         <View style={styles.infoBox}>
-          <Text style={styles.filaTexto}>
-            <Text style={styles.etiqueta}>Nombre: </Text>
-            <Text style={styles.subtitle}>{player.nombre} {player.apellidos}</Text>
+            <Text style={styles.title}>{player.nombre} {player.apellidos}
           </Text>
 
           <Text style={styles.filaTexto}>
@@ -63,10 +65,11 @@ const DetalleScreen: React.FC<Props> = ({ route, navigation }) => {
             <Text style={styles.subtitle}>{player.precio} €</Text>
           </Text>
   
-          <Text style={styles.filaTexto}>
-            <Text style={styles.etiqueta}>Descripción: </Text>
+          <View style={styles.contenedorDescripcion}>
+            <Text style={styles.etiqueta}>Descripción</Text>
+            <View style={styles.lineaDecorativa} />
             <Text style={styles.textoDescripcion}>{player.descripcion}</Text>
-          </Text>
+          </View>
        
         </View>
           {/* BOTÓN SIMPLIFICADO: Quitamos el View innecesario */}
@@ -98,11 +101,19 @@ const DetalleScreen: React.FC<Props> = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: '#FFFFFF', 
+    backgroundColor: '#FFFFFF',
   },
-  imagenDetalle: {
-    width: '100%',
-    height: 300, 
+  // Contenedor centrado para la foto de perfil
+  contenedorAvatar: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  imagenRedonda: {
+    width: 250,
+    height: 250,
+    borderRadius: 125, // Mitad exacta de 250
+    borderWidth: 4,
+    borderColor: '#1A237E',
     backgroundColor: '#EEE',
   },
   textoAyuda: {
@@ -113,68 +124,89 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   infoBox: {
-    padding: 20, 
+    padding: 20,
+  },
+  title: {
+    fontSize: 25,
+    color: '#1A237E',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    paddingBottom: 15,
   },
   filaTexto: {
-    flexDirection: 'row', 
-    marginBottom: 12,      
-    borderBottomWidth: 1,  
+    flexDirection: 'row',
+    marginBottom: 12,
+    borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
     paddingBottom: 8,
   },
   etiqueta: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1A237E', 
-    width: 110,       
+    fontSize: 14,
+    color: '#444',
+    textTransform: 'uppercase',
+    flex: 1,
   },
   subtitle: {
     fontSize: 16,
-    color: '#444',    
-    flex: 1,          
-  },
-  modelFull: { 
-    flex: 1, 
-    backgroundColor: 'black', 
-    justifyContent: 'center',
-    alignItems: 'center' 
-  },
-  imagenZoom: { 
-    width: '100%', 
-    height: '90%' 
-  },
-  botonCerrar: { 
-    position: 'absolute', 
-    top: 50, 
-    right: 25, 
-    zIndex: 10,
-    backgroundColor: 'rgba(255,255,255,0.2)', 
-    padding: 10,
-    borderRadius: 20
-  },
-  textoBoton: { 
-    color: 'white', 
     fontWeight: 'bold',
-    fontSize: 16,
-    textAlign: 'center'
+    color: '#000000',
+    width: 120,
   },
-  seccionDescripcion: {
-    marginTop: 10,
+  // Bloque de descripción mejorado
+  contenedorDescripcion: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#F8F9FA',
+    borderRadius: 12,
+  },
+  lineaDecorativa: {
+    height: 1,
+    backgroundColor: '#DEE2E6',
+    marginBottom: 10,
+    width: '30%',
   },
   textoDescripcion: {
     fontSize: 16,
-    lineHeight: 22, 
-    color: '#444',
+    lineHeight: 24,
+    color: '#000000',
     marginTop: 5,
-    textAlign: 'justify', 
+    textAlign: 'justify',
   },
-  botonMultimedia: { 
-    backgroundColor: '#1A237E', 
-    padding: 15, 
-    borderRadius: 10, 
-    marginVertical: 15, 
+  // Botones y Modales
+  botonMultimedia: {
+    backgroundColor: '#1A237E',
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 15,
+    marginHorizontal: 20, // Añadido para que no toque los bordes
     alignItems: 'center',
-    elevation: 3 
+    elevation: 3,
+  },
+  modelFull: {
+    flex: 1,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imagenZoom: {
+    width: '100%',
+    height: '90%',
+  },
+  botonCerrar: {
+    position: 'absolute',
+    top: 50,
+    right: 25,
+    zIndex: 10,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    padding: 10,
+    borderRadius: 20,
+  },
+  textoBoton: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 
