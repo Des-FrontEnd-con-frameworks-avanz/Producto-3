@@ -53,7 +53,7 @@ const MultimediaScreen: React.FC<Props> = ({ route }) => {
         {player.videoUrl && player.videoUrl !== undefined ? (
         <Video 
           ref={videoRef}
-          source={{ uri: 'https://www.w3schools.com/html/mov_bbb.mp4' }}//{{uri : player.videoUrl}}
+          source={{ uri: player.videoUrl }}
           style={styles.videoPlayer}
           paused={paused}
           muted={muted}
