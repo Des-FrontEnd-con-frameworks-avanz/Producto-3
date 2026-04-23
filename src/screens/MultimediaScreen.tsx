@@ -53,8 +53,11 @@ const MultimediaScreen: React.FC<Props> = ({ route }) => {
         {player.videoUrl && player.videoUrl !== undefined ? (
         <Video 
           ref={videoRef}
-          source={{ uri: 'https://www.w3schools.com/html/mov_bbb.mp4' }}//{{uri : player.videoUrl}}
+          source={{ uri: 'https://www.w3schools.com/html/mov_bbb.webm' }}//{{uri : player.videoUrl}}
           style={styles.videoPlayer}
+          useTextureView={true}
+          disableFocus={true}
+          hideShutterView={true}
           paused={paused}
           muted={muted}
           onProgress={onProgress}
@@ -126,8 +129,8 @@ const styles = StyleSheet.create({
   },
   videoPlayer: {
     width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: '#000',
+    height: 250,
+    backgroundColor: 'transparent',
   },
 
   barraWrapper: {
