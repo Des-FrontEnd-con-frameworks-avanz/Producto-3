@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, Image, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import {
   createNativeStackNavigator,
@@ -22,6 +22,8 @@ import ListadoScreen from './src/screens/ListadoScreen';
 import DetalleScreen from './src/screens/DetalleScreen';
 import MultimediaScreen from './src/screens/MultimediaScreen';
 import type { Player } from './src/types/Player';
+
+const logo = require('./src/assets/logo.png');
 
 // Tipo compartido con las pantallas para tipar la navegación
 export type RootStackParamList = {
@@ -52,41 +54,48 @@ const HomeButton: React.FC<HomeButtonProps> = ({ navigation }) => (
   </TouchableOpacity>
 );
 
+const HeaderTitle: React.FC<{ title: string }> = ({ title }) => (
+  <View style={styles.headerTitleContainer}>
+    <Image source={logo} style={styles.headerLogo} resizeMode="contain" />
+    <Text style={styles.headerTitleText}>{title}</Text>
+  </View>
+);
+
 export default function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="Listado"
-        screenOptions={({ navigation }) => ({
+        screenOptions={{
           headerStyle: { backgroundColor: COLORS.headerBackground },
-          headerTitleStyle: {
-            color: COLORS.headerText,
-            fontWeight: 'bold',
-            fontSize: 18,
-          },
           headerTintColor: COLORS.headerTint,
-          headerRight: () => <HomeButton navigation={navigation} />,
-        })}
+        }}
       >
         {/* Pantalla 1: Listado (pantalla inicial) - Kevin */}
         <Stack.Screen
           name="Listado"
           component={ListadoScreen}
-          options={{ title: 'Inicio' }}
+          options={{ headerTitle: () => <HeaderTitle title="Inicio" /> }}
         />
 
         {/* Pantalla 2: Detalle - Thabata */}
         <Stack.Screen
           name="Detalle"
           component={DetalleScreen}
-          options={{ title: 'Detalle' }}
+          options={({ navigation }) => ({
+            headerTitle: () => <HeaderTitle title="Detalle" />,
+            headerRight: () => <HomeButton navigation={navigation} />,
+          })}
         />
 
         {/* Pantalla 3: Multimedia - Mar */}
         <Stack.Screen
           name="Multimedia"
           component={MultimediaScreen}
-          options={{ title: 'Multimedia' }}
+          options={({ navigation }) => ({
+            headerTitle: () => <HeaderTitle title="Multimedia" />,
+            headerRight: () => <HomeButton navigation={navigation} />,
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>
@@ -103,5 +112,19 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '600',
+  },
+  headerTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerLogo: {
+    width: 28,
+    height: 28,
+    marginRight: 8,
+  },
+  headerTitleText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 18,
   },
 });
