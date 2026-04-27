@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
-import firestore from '@react-native-firebase/firestore'; 
-import { Player } from '../types/Player'; 
+import { getFirestore, collection, getDocs } from '@react-native-firebase/firestore';
+import { Player } from '../types/Player';
 
 interface State {
   jugadores: Player[];     
@@ -22,42 +22,37 @@ export default class ListadoScreen extends Component<Props, State> {
     };
   }
 
-  componentDidMount() {
-    firestore()
-      .collection('players')
-      .get()
-      .then((querySnapshot: any) => {
-        const arrayJugadores: Player[] = [];
-        
-        querySnapshot.forEach((documento: any) => {
-          const datos = documento.data();
-          
-          arrayJugadores.push({
-            id: documento.id,
-            nombre: datos.nombre,
-            apellidos: datos.apellidos,
-            posicion: datos.posicion,
-            edad: datos.edad,
-            altura: datos.altura,
-            peso: datos.peso,
-            experiencia: datos.experiencia,
-            precio: datos.precio,
-            fotoUrl: datos.fotoUrl,
-            videoUrl: datos.videoUrl,
-            posterUrl: datos.posterUrl,
-            descripcion: datos.descripcion,
-          });
-        });
+  async componentDidMount() {
+    try {
+      console.log('[ListadoScreen] Cargando jugadores desde Firestore...');
+      const db = getFirestore();
+      const snapshot = await getDocs(collection(db, 'players'));
+      console.log(`[ListadoScreen] Recibidos ${snapshot.size} jugadores`);
 
-        this.setState({
-          jugadores: arrayJugadores,
-          cargando: false,
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-        this.setState({ cargando: false });
+      const arrayJugadores: Player[] = snapshot.docs.map((documento) => {
+        const datos = documento.data();
+        return {
+          id: documento.id,
+          nombre: datos.nombre,
+          apellidos: datos.apellidos,
+          posicion: datos.posicion,
+          edad: datos.edad,
+          altura: datos.altura,
+          peso: datos.peso,
+          experiencia: datos.experiencia,
+          precio: datos.precio,
+          fotoUrl: datos.fotoUrl,
+          videoUrl: datos.videoUrl,
+          posterUrl: datos.posterUrl,
+          descripcion: datos.descripcion,
+        };
       });
+
+      this.setState({ jugadores: arrayJugadores, cargando: false });
+    } catch (error) {
+      console.error('[ListadoScreen] Error cargando jugadores:', error);
+      this.setState({ cargando: false });
+    }
   }
 
   renderTarjeta = ({ item }: { item: Player }) => {
