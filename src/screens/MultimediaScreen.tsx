@@ -1,74 +1,93 @@
 /**
  * MultimediaScreen - Pantalla de reproductor multimedia
- * TODO (Mar): Implementar reproductor de video/audio con mínimo 4 botones de interacción
- *
- * Recibe route.params.player con el objeto Player seleccionado (incluye videoUrl y posterUrl).
+ * Migrado a react-native-video v7 (useVideoPlayer + VideoView).
+ * surfaceType="texture" arregla el bug de pantalla negra en Android con Fabric.
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
-import Video from 'react-native-video';
-
+import { useVideoPlayer, VideoView } from 'react-native-video';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Multimedia'>;
 
 const MultimediaScreen: React.FC<Props> = ({ route }) => {
   const { player } = route.params;
 
-  const videoRef = useRef<React.ComponentRef<typeof Video> | null>(null);
+  const videoPlayer = useVideoPlayer(
+    { uri: player.videoUrl ?? '' },
+    (p) => {
+      p.play();
+    },
+  );
 
   const [paused, setPaused] = useState(false);
   const [muted, setMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  const onProgress = (data: {currentTime: number} ) => {
-    setCurrentTime(data.currentTime);
-  }
+  useEffect(() => {
+    const subProgress = videoPlayer.addEventListener('onProgress', (data) => {
+      setCurrentTime(data.currentTime);
+    });
+    const subLoad = videoPlayer.addEventListener('onLoad', (data) => {
+      setDuration(data.duration);
+    });
+    const subEnd = videoPlayer.addEventListener('onEnd', () => {
+      setPaused(true);
+    });
+    return () => {
+      subProgress.remove();
+      subLoad.remove();
+      subEnd.remove();
+    };
+  }, [videoPlayer]);
 
-  const onLoad = (data: {duration: number}) => {
-    setDuration(data.duration)
-  }
+  const togglePlayPause = () => {
+    if (paused) {
+      videoPlayer.play();
+    } else {
+      videoPlayer.pause();
+    }
+    setPaused(!paused);
+  };
+
+  const toggleMute = () => {
+    const next = !muted;
+    videoPlayer.muted = next;
+    setMuted(next);
+  };
 
   const reiniciarVideo = () => {
-    videoRef.current?.seek(0);
-  }
+    videoPlayer.seekTo(0);
+  };
 
   const adelantar10Segundos = () => {
-    videoRef.current?.seek(Math.min(currentTime + 10, duration));
-  }
+    videoPlayer.seekBy(10);
+  };
 
   const retroceder10Segundos = () => {
-    videoRef.current?.seek(Math.max(currentTime - 10, 0));
-  }
+    videoPlayer.seekBy(-10);
+  };
 
-  const progress = duration>0 ? currentTime/ duration: 0;
-  
+  const progress = duration > 0 ? currentTime / duration : 0;
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mejores Jugadas</Text>
-        {player.videoUrl && player.videoUrl !== undefined ? (
-        <Video 
-          ref={videoRef}
-          source={{ uri: player.videoUrl }}
+      {player.videoUrl ? (
+        <VideoView
+          player={videoPlayer}
           style={styles.videoPlayer}
-          paused={paused}
-          muted={muted}
-          onProgress={onProgress}
-          onLoad={onLoad}
           resizeMode="contain"
-          poster={player.posterUrl}
-          posterResizeMode="cover"
-          controls={true}
-          onError={(e) => console.log('ERROR VIDEO:', e)}
-        /> ) : (
-          <Text style={{ color: 'white' }}>No hay vídeo disponible</Text>   
-        )}
+          surfaceType="texture"
+        />
+      ) : (
+        <Text style={{ color: 'white' }}>No hay vídeo disponible</Text>
+      )}
 
-        {/* PROGRESO */}
+      {/* PROGRESO */}
       <View style={styles.barraWrapper}>
         <View style={styles.barraContainer}>
           <View style={[styles.barraProgreso, { width: `${progress * 100}%` }]} />
@@ -78,7 +97,7 @@ const MultimediaScreen: React.FC<Props> = ({ route }) => {
         </Text>
       </View>
 
-       {/* CONTROLES */}
+      {/* CONTROLES */}
       <View style={styles.controlesContainer}>
         <TouchableOpacity style={styles.boton} onPress={reiniciarVideo}>
           <Text style={styles.textoBoton}>⏮️</Text>
@@ -90,24 +109,20 @@ const MultimediaScreen: React.FC<Props> = ({ route }) => {
 
         <TouchableOpacity
           style={[styles.boton, styles.botonPrincipal]}
-          onPress={() => setPaused(!paused)}
+          onPress={togglePlayPause}
         >
-          <Text style={styles.textoBotonGrande}>
-            {paused ? '▶️' : '⏸️'}
-          </Text>
+          <Text style={styles.textoBotonGrande}>{paused ? '▶️' : '⏸️'}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.boton} onPress={adelantar10Segundos}>
           <Text style={styles.textoBoton}>⏩</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.boton} onPress={() => setMuted(!muted)}>
-          <Text style={styles.textoBoton}>
-            {muted ? '🔇' : '🔊'}
-          </Text>
+        <TouchableOpacity style={styles.boton} onPress={toggleMute}>
+          <Text style={styles.textoBoton}>{muted ? '🔇' : '🔊'}</Text>
         </TouchableOpacity>
       </View>
-    </View> 
+    </View>
   );
 };
 
